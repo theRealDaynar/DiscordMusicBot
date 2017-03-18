@@ -83,6 +83,8 @@ class MusicBot(discord.Client):
         self.init_ok = False
         self.cached_client_id = None
 
+        self.choose_list = []
+
         if not self.autoplaylist:
             print("Warning: Autoplaylist is empty, disabling.")
             self.config.auto_playlist = False
@@ -1814,14 +1816,23 @@ class MusicBot(discord.Client):
 
 # Begin Daynar custom commands
 
-    async def cmd_coin(self):
-        return Response(choice(['Heads', 'Tails']))
+    async def cmd_coin(self, author):
+        return Response('@%s' % author.name + " " + choice(['Heads','Tails']))
 
-    async def cmd_choose(self, leftover_args):
-        return Response(choice(leftover_args))
+        
+    async def cmd_enlist(self, leftover_args):
+        self.choose_list.append(' '.join([*leftover_args]))
+        return Response(' '.join([*leftover_args," enlisted."]), delete_after=20)
+    async def cmd_clear(self):
+        del self.choose_list[:];
+        return Response("Choose list cleared.", delete_after=20)
+    async def cmd_choose(self, author):
+        if not self.choose_list:
+          return Response("Choose list has no values!", delete_after=20)
+        return Response('@%s' % author.name + " " + choice(self.choose_list))
         
     async def cmd_random(self, leftover_args):
-        return Response(str(randint(int(leftover_args[0]), int(leftover_args[1]))))
+        return Response('@%s' % author.name + " " + str(randint(int(leftover_args[0]), int(leftover_args[1]))))
         
     async def cmd_add(self, leftover_args):
         self.autoplaylist.append(leftover_args[0])
