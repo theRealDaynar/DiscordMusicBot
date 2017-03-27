@@ -1817,29 +1817,71 @@ class MusicBot(discord.Client):
 # Begin Daynar custom commands
 
     async def cmd_coin(self, author):
+        """
+        Usage:
+            {command_prefix}coin
+
+        Returns heads or tales.
+        """
         return Response('@%s' % author.name + " " + choice(['Heads','Tails']))
 
         
     async def cmd_enlist(self, leftover_args):
+        """
+        Usage:
+            {command_prefix}enlist value to enlist
+
+        Enlists whatever follows in a list used by choose.
+        """
         self.choose_list.append(' '.join([*leftover_args]))
         return Response(' '.join([*leftover_args," enlisted."]), delete_after=20)
     async def cmd_clear(self):
+        """
+        Usage:
+            {command_prefix}clear
+
+        Clears the list used by choose.
+        """
         del self.choose_list[:];
         return Response("Choose list cleared.", delete_after=20)
     async def cmd_choose(self, author):
+        """
+        Usage:
+            {command_prefix}choose
+
+        Chooses a random entry entered by using the enlist command.
+        """
         if not self.choose_list:
           return Response("Choose list has no values!", delete_after=20)
         return Response('@%s' % author.name + " " + choice(self.choose_list))
         
-    async def cmd_random(self, leftover_args):
+    async def cmd_random(self, author, leftover_args):
+        """
+        Usage:
+            {command_prefix}random min max
+
+        Chooses a random int value between min and max.
+        """
         return Response('@%s' % author.name + " " + str(randint(int(leftover_args[0]), int(leftover_args[1]))))
         
     async def cmd_add(self, leftover_args):
+        """
+        Usage:
+            {command_prefix}add video_link
+
+        Adds the link to the autoplaylist file.
+        """
         self.autoplaylist.append(leftover_args[0])
         write_file(self.config.auto_playlist_file, self.autoplaylist)
         return Response("Added to autoplaylist.", delete_after=20)
 
     async def cmd_remove(self, leftover_args):
+        """
+        Usage:
+            {command_prefix}remove video_link
+
+        Removes the link from the autoplaylist file.
+        """
         if leftover_args[0] in self.autoplaylist:
             self.autoplaylist.remove(leftover_args[0])
             write_file(self.config.auto_playlist_file, self.autoplaylist)
